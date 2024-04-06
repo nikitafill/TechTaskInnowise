@@ -11,6 +11,6 @@ namespace InnowiseTechTask.Models
         public int Stars { get; set; }
 
         public int FilmId { get; set; }
-        public virtual Film Film { get; set; }
+        public  Film Film { get; set; }
     }
 }

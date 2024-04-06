@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using InnowiseTechTask.Models;
 using Microsoft.EntityFrameworkCore;
+using TechTaskInnowise.Models;
 
 namespace InnowiseTechTask.Data
 {
