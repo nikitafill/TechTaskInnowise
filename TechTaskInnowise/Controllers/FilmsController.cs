@@ -50,7 +50,7 @@ namespace TechTaskInnowise.Controllers
         }
         [HttpPut]
         [Route("UpdateActor")]
-        public async Task<IActionResult> UpdateActorAsync([FromBody] UpdActorDTO updActorDTO, int id)
+        public async Task<IActionResult> UpdateFilmAsync([FromBody] UpdFilmDTO updFilmDTO, int id)
         {
             var film = await _filmRepository.GetAsync(id);
 
@@ -72,14 +72,14 @@ namespace TechTaskInnowise.Controllers
 
         // DELETE: api/Actors/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteActor(int id)
+        public async Task<IActionResult> DeleteFilm(int id)
         {
-            var actor = await _filmRepository.GetAsync(id);
-            if (actor == null)
+            var film = await _filmRepository.GetAsync(id);
+            if (film == null)
             {
                 return NotFound();
             }
-            await _filmRepository.DeleteAsync(actor);
+            await _filmRepository.DeleteAsync(film);
             return Ok();
         }
     }

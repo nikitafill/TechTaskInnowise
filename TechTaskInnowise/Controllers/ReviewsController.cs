@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechTaskInnowise.Models;
+using TechTaskInnowise.IRepositories;
+using TechTaskInnowise.Models.DTOs;
 
 namespace TechTaskInnowise.Controllers
 {
@@ -11,63 +13,77 @@ namespace TechTaskInnowise.Controllers
     [Route("api/[controller]")]
     public class ReviewsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IReviewsRepositories _reviewRepository;
 
-        public ReviewsController(ApplicationDbContext context)
+        public ReviewsController(IReviewsRepositories reviewRepository)
         {
-            _context = context;
+            _reviewRepository = reviewRepository;
         }
         // GET: ActorsController
+        // GET: api/Actors
         [HttpGet]
-        public ActionResult<IEnumerable<Review>> GetReviews()
+        public async Task<IActionResult> GetReviewsList()
         {
-            var reviews = _context.Reviews.ToList();
-            return reviews;
+            var reviews = await _reviewRepository.GetListAsync();
+            return Ok(reviews.ToList());
         }
-
         [HttpGet("{id}")]
-        public ActionResult<Review> GetReview(int id)
+        public async Task<IActionResult> GetReview(int id)
         {
-            var review = _context.Reviews.Find(id);
+            var review = await _reviewRepository.GetAsync(id);
             if (review == null)
             {
                 return NotFound();
             }
-            return review;
+            return Ok(review);
         }
-
         [HttpPost]
-        public ActionResult<Actor> CreateReview([FromBody] Review review)
+        [Route("CreateActor")]
+        public async Task<IActionResult> CreateReviewAsync([FromBody] AddReviewDTO addReviewDTO)
         {
-            _context.Reviews.Add(review);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(CreateReview), new { id = review.Id }, review);
+            var review = new Review
+            {
+                Title = addReviewDTO.Title,
+                Description = addReviewDTO.Description,
+                Stars = addReviewDTO.Stars,
+            };
+            await _reviewRepository.AddAsync(review);
+            return Ok(review);
         }
-
-        [HttpPut("{id}")]
-        public IActionResult UpdateReview(int id, [FromBody] Review review)
+        [HttpPut]
+        [Route("UpdateActor")]
+        public async Task<IActionResult> UpdateReviewAsync([FromBody] UpdReviewDTO updReviewDTO, int id)
         {
+            var review = await _reviewRepository.GetAsync(id);
+
             if (id != review.Id)
             {
                 return BadRequest();
             }
-            _context.Entry(review).State = EntityState.Modified;
-            _context.SaveChanges();
-            return NoContent();
+            if (review != null)
+            {
+                review.Title = updReviewDTO.Title;
+                review.Description = updReviewDTO.Description;
+                review.Stars = updReviewDTO.Stars;
+
+                await _reviewRepository.UpdateAsync(review);
+                return Ok(review);
+            }
+
+            return NotFound();
         }
 
         // DELETE: api/Actors/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteReview(int id)
+        public async Task<IActionResult> DeleteReview(int id)
         {
-            var review = _context.Reviews.Find(id);
+            var review = await _reviewRepository.GetAsync(id);
             if (review == null)
             {
                 return NotFound();
             }
-            _context.Reviews.Remove(review);
-            _context.SaveChanges();
-            return NoContent();
+            await _reviewRepository.DeleteAsync(review);
+            return Ok();
         }
     }
 }
