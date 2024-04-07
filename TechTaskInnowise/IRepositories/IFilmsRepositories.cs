@@ -2,7 +2,7 @@
 
 namespace TechTaskInnowise.IRepositories
 {
-    public class IFilmsRepositories: IGenericRepository<Film>
+    public interface IFilmsRepositories : IGenericRepositories<Film>
     {
 
     }

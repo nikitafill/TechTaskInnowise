@@ -3,6 +3,9 @@ using TechTaskInnowise.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TechTaskInnowise.IRepositories;
+using TechTaskInnowise.Repositories;
+using TechTaskInnowise.Models.DTOs;
 
 namespace TechTaskInnowise.Controllers
 {
@@ -10,67 +13,75 @@ namespace TechTaskInnowise.Controllers
     [Route("api/[controller]")]
     public class ActorsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IActorRepositories _actorRepository;
 
-        public ActorsController(ApplicationDbContext context)
+        public ActorsController(IActorRepositories actorRepository)
         {
-            _context = context;
+            _actorRepository = actorRepository;
         }
         // GET: ActorsController
         // GET: api/Actors
         [HttpGet]
-        public ActionResult<IEnumerable<Actor>> GetActors()
+        public async Task<IActionResult> GetActorsList() 
         {
-            var actors = _context.Actors.ToList();
-            return actors;
+            var actors = await _actorRepository.GetListAsync();
+            return Ok(actors.ToList());
         }
-
-        // GET: api/Actors/5
         [HttpGet("{id}")]
-        public ActionResult<Actor> GetActor(int id)
+        public async Task<IActionResult> GetActor(int id)
         {
-            var actor = _context.Actors.Find(id);
+            var actor = await _actorRepository.GetAsync(id);
             if (actor == null)
             {
                 return NotFound();
             }
-            return actor;
+            return Ok(actor);
         }
-
-        // POST: api/Actors
         [HttpPost]
-        public ActionResult<Actor> CreateActor([FromBody] Actor actor)
+        [Route("CreateActor")]
+        public async Task<IActionResult> CreateActorAsync([FromBody] AddActorDTO addActorDTO)
         {
-            _context.Actors.Add(actor);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetActor), new { id = actor.Id }, actor);
+            var actor = new Actor
+            {
+                FirstName = addActorDTO.FirstName,
+                LastName = addActorDTO.LastName,
+            };
+            await _actorRepository.AddAsync(actor);
+            return Ok(actor);
         }
-
-        // PUT: api/Actors/5
-        [HttpPut("{id}")]
-        public IActionResult UpdateActor(int id, [FromBody] Actor actor)
+        [HttpPut]
+        [Route("UpdateActor")]
+        public async Task<IActionResult> UpdateActorAsync([FromBody] UpdActorDTO updActorDTO,int id)
         {
+            var actor= await _actorRepository.GetAsync(id);
+
             if (id != actor.Id)
             {
                 return BadRequest();
             }
-            _context.Entry(actor).State = EntityState.Modified;
-            _context.SaveChanges();
-            return NoContent();
+            if(actor !=null)
+            {
+                actor.FirstName = actor.FirstName;
+                actor.LastName = actor.FirstName;
+
+                await _actorRepository.UpdateAsync(actor);
+                return Ok(actor);
+            }
+
+            return NotFound();
         }
 
         // DELETE: api/Actors/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteActor(int id)
+        public async Task<IActionResult> DeleteActor(int id)
         {
-            var actor = _context.Actors.Find(id);
+            var actor = await _actorRepository.GetAsync(id);
             if (actor == null)
             {
                 return NotFound();
             }
-            _context.Actors.Remove(actor);
-            _context.SaveChanges();
-            return NoContent();
+            await _actorRepository.DeleteAsync(actor);
+            return Ok();
         }
     }
 }

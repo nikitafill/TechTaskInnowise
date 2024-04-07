@@ -1,9 +1,9 @@
 ﻿using TechTaskInnowise.Models;
+using TechTaskInnowise.Models.DTOs;
 
 namespace TechTaskInnowise.IRepositories
 {
-    public class IActorRepositories: IGenericRepository<Actor>
+    public interface IActorRepositories : IGenericRepositories<Actor>
     {
-
     }
 }
