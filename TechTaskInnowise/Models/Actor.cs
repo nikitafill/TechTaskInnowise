@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace InnowiseTechTask.Models
+namespace TechTaskInnowise.Models
 {
     public class Actor
     {

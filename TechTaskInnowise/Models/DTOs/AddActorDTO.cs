@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace InnowiseTechTask.Models.DTOs
+namespace TechTaskInnowise.Models.DTOs
 {
     public class AddActorDTO
     {

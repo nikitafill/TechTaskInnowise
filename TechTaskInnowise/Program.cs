@@ -1,5 +1,5 @@
 
-using InnowiseTechTask.Data;
+using TechTaskInnowise.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace TechTaskInnowise

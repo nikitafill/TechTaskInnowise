@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TechTaskInnowise.Models;
 
-namespace InnowiseTechTask.Models
+namespace TechTaskInnowise.Models
 {
     public class Review
     {
@@ -11,6 +12,6 @@ namespace InnowiseTechTask.Models
         public int Stars { get; set; }
 
         public int FilmId { get; set; }
-        public  Film Film { get; set; }
+        public Film Film { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using InnowiseTechTask.Models;
+﻿using TechTaskInnowise.Models;
 
 namespace TechTaskInnowise.Models.DTOs
 {

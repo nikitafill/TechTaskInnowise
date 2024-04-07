@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
+using TechTaskInnowise.Models;
 
-namespace InnowiseTechTask.Models
+namespace TechTaskInnowise.Models
 {
     public class Film
     {

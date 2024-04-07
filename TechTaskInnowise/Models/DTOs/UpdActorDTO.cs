@@ -1,4 +1,4 @@
-﻿namespace InnowiseTechTask.Models.DTOs
+﻿namespace TechTaskInnowise.Models.DTOs
 {
     public class UpdActorDTO
     {

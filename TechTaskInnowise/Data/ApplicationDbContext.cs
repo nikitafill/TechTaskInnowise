@@ -1,12 +1,11 @@
-﻿using InnowiseTechTask.Models;
+﻿using TechTaskInnowise.Models;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using InnowiseTechTask.Models;
 using Microsoft.EntityFrameworkCore;
 using TechTaskInnowise.Models;
 
-namespace InnowiseTechTask.Data
+namespace TechTaskInnowise.Data
 {
     public class ApplicationDbContext : DbContext
     {

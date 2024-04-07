@@ -1,4 +1,6 @@
-﻿namespace InnowiseTechTask.Models.DTOs
+﻿using TechTaskInnowise.Models;
+
+namespace TechTaskInnowise.Models.DTOs
 {
     public class UpdFilmDTO
     {

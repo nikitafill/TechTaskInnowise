@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TechTaskInnowise.Models;
 
-namespace InnowiseTechTask.Models.DTOs
+namespace TechTaskInnowise.Models.DTOs
 {
     public class AddFilmDTO
     {

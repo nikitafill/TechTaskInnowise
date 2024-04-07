@@ -1,10 +1,11 @@
-﻿using InnowiseTechTask.Data;
-using InnowiseTechTask.Models;
+﻿using TechTaskInnowise.Data;
+using TechTaskInnowise.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TechTaskInnowise.Models;
 
-namespace InnowiseTechTask.Controllers
+namespace TechTaskInnowise.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
