@@ -3,6 +3,8 @@ using TechTaskInnowise.Models;
 using System.Linq;
 using TechTaskInnowise.Data;
 using Microsoft.EntityFrameworkCore;
+using TechTaskInnowise.IRepositories;
+using TechTaskInnowise.Models.DTOs;
 
 namespace TechTaskInnowise.Controllers
 {
@@ -10,64 +12,75 @@ namespace TechTaskInnowise.Controllers
     [Route("api/[controller]")]
     public class FilmsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IFilmsRepositories _filmRepository;
 
-        public FilmsController(ApplicationDbContext context)
+        public FilmsController(IFilmsRepositories filmRepository)
         {
-            _context = context;
+            _filmRepository = filmRepository;
         }
         // GET: ActorsController
+        // GET: api/Actors
         [HttpGet]
-        public ActionResult<IEnumerable<Film>> GetFilms()
+        public async Task<IActionResult> GetFilmsList()
         {
-            var films = _context.Films.ToList();
-            return films;
+            var films = await _filmRepository.GetListAsync();
+            return Ok(films.ToList());
         }
-
         [HttpGet("{id}")]
-        public ActionResult<Film> GetFilm(int id)
+        public async Task<IActionResult> GetFilm(int id)
         {
-            var film = _context.Films.Find(id);
+            var film = await _filmRepository.GetAsync(id);
             if (film == null)
             {
                 return NotFound();
             }
-            return film;
+            return Ok(film);
         }
-
         [HttpPost]
-        public ActionResult<Actor> CreateFilm([FromBody] Film film)
+        [Route("CreateActor")]
+        public async Task<IActionResult> CreateFilmAsync([FromBody] AddFilmDTO addFilmDTO)
         {
-            _context.Films.Add(film);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetFilm), new { id = film.Id }, film);
+            var film = new Film
+            {
+                Title = addFilmDTO.Title,
+                Year = addFilmDTO.Year,
+            };
+            await _filmRepository.AddAsync(film);
+            return Ok(film);
         }
-
-        // PUT: api/Actors/5
-        [HttpPut("{id}")]
-        public IActionResult UpdateFilm(int id, [FromBody] Film film)
+        [HttpPut]
+        [Route("UpdateActor")]
+        public async Task<IActionResult> UpdateActorAsync([FromBody] UpdActorDTO updActorDTO, int id)
         {
+            var film = await _filmRepository.GetAsync(id);
+
             if (id != film.Id)
             {
                 return BadRequest();
             }
-            _context.Entry(film).State = EntityState.Modified;
-            _context.SaveChanges();
-            return NoContent();
+            if (film != null)
+            {
+                film.Title = film.Title;
+                film.Year = film.Year;
+
+                await _filmRepository.UpdateAsync(film);
+                return Ok(film);
+            }
+
+            return NotFound();
         }
 
         // DELETE: api/Actors/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteFilm(int id)
+        public async Task<IActionResult> DeleteActor(int id)
         {
-            var film = _context.Films.Find(id);
-            if (film == null)
+            var actor = await _filmRepository.GetAsync(id);
+            if (actor == null)
             {
                 return NotFound();
             }
-            _context.Films.Remove(film);
-            _context.SaveChanges();
-            return NoContent();
+            await _filmRepository.DeleteAsync(actor);
+            return Ok();
         }
     }
 }
