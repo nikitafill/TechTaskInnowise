@@ -2,6 +2,8 @@
 using TechTaskInnowise.Data;
 using Microsoft.EntityFrameworkCore;
 using TechTaskInnowise.Middleware;
+using TechTaskInnowise.IRepositories;
+using TechTaskInnowise.Repositories;
 
 namespace TechTaskInnowise
 {
@@ -12,11 +14,18 @@ namespace TechTaskInnowise
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionsString")));
+
+            builder.Services.AddScoped<IActorRepositories, ActorsRepository>();
+            builder.Services.AddScoped<IFilmsRepositories, FilmsRepository>();
+            builder.Services.AddScoped<IReviewsRepositories, ReviewsRepository>();
+
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TechTaskInnowise.IRepositories;
 using TechTaskInnowise.Models;
@@ -30,8 +32,8 @@ namespace TechTaskInnowise.Controllers
         {
             try
             {
-                var actors = await _actorRepository.GetListAsync();
-                return Ok(actors.ToList());
+                var actors = await _actorRepository.GetListAsync(includeFilms: true);
+                return Ok(actors);
             }
             catch (Exception ex)
             {
@@ -46,7 +48,7 @@ namespace TechTaskInnowise.Controllers
         {
             try
             {
-                var actor = await _actorRepository.GetAsync(id);
+                var actor = await _actorRepository.GetAsync(id, includeFilms: true);
                 if (actor == null)
                 {
                     return NotFound();

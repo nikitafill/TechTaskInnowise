@@ -29,7 +29,7 @@ namespace TechTaskInnowise.Controllers
             try
             {
                 var films = await _filmRepository.GetListAsync();
-                return Ok(films.ToList());
+                return Ok(films);
             }
             catch (Exception ex)
             {

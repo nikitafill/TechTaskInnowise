@@ -9,6 +9,5 @@ namespace TechTaskInnowise.Models.DTOs
         public int Stars { get; set; }
 
         public int FilmId { get; set; }
-        public Film Film { get; set; }
     }
 }

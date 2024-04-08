@@ -29,7 +29,7 @@ namespace TechTaskInnowise.Controllers
             try
             {
                 var reviews = await _reviewRepository.GetListAsync();
-                return Ok(reviews.ToList());
+                return Ok(reviews);
             }
             catch (Exception ex)
             {
@@ -66,7 +66,8 @@ namespace TechTaskInnowise.Controllers
                 {
                     Title = addReviewDTO.Title,
                     Description = addReviewDTO.Description,
-                    Stars = addReviewDTO.Stars
+                    Stars = addReviewDTO.Stars,
+                    FilmId = addReviewDTO.FilmId,
                 };
                 await _reviewRepository.AddAsync(review);
                 return Ok(review);
@@ -87,11 +88,12 @@ namespace TechTaskInnowise.Controllers
                 if (review == null)
                 {
                     return NotFound();
-                }
+                } 
 
                 review.Title = updReviewDTO.Title;
                 review.Description = updReviewDTO.Description;
                 review.Stars = updReviewDTO.Stars;
+                review.FilmId = updReviewDTO.FilmId;
 
                 await _reviewRepository.UpdateAsync(review);
                 return Ok(review);
