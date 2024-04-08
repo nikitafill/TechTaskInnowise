@@ -1,6 +1,7 @@
 
 using TechTaskInnowise.Data;
 using Microsoft.EntityFrameworkCore;
+using TechTaskInnowise.Middleware;
 
 namespace TechTaskInnowise
 {
@@ -9,8 +10,6 @@ namespace TechTaskInnowise
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,6 +29,7 @@ namespace TechTaskInnowise
 
             app.UseAuthorization();
 
+            app.UseExceptionHandlingMiddleware();
 
             app.MapControllers();
 
