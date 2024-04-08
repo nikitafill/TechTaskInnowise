@@ -1,87 +1,132 @@
-﻿using TechTaskInnowise.Data;
-using TechTaskInnowise.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TechTaskInnowise.IRepositories;
-using TechTaskInnowise.Repositories;
+using TechTaskInnowise.Models;
 using TechTaskInnowise.Models.DTOs;
 
 namespace TechTaskInnowise.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ActorsController : Controller
+    public class ActorsController : ControllerBase
     {
         private readonly IActorRepositories _actorRepository;
+        private readonly ILogger<ActorsController> _logger;
 
-        public ActorsController(IActorRepositories actorRepository)
+        public ActorsController(IActorRepositories actorRepository, ILogger<ActorsController> logger)
         {
             _actorRepository = actorRepository;
+            _logger = logger;
         }
-        // GET: ActorsController
+
         // GET: api/Actors
         [HttpGet]
-        public async Task<IActionResult> GetActorsList() 
+        public async Task<IActionResult> GetActorsList()
         {
-            var actors = await _actorRepository.GetListAsync();
-            return Ok(actors.ToList());
+            try
+            {
+                var actors = await _actorRepository.GetListAsync();
+                return Ok(actors.ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting actors list.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
+
+        // GET: api/Actors/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetActor(int id)
         {
-            var actor = await _actorRepository.GetAsync(id);
-            if (actor == null)
+            try
             {
-                return NotFound();
+                var actor = await _actorRepository.GetAsync(id);
+                if (actor == null)
+                {
+                    return NotFound();
+                }
+                return Ok(actor);
             }
-            return Ok(actor);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while getting actor with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
-        [HttpPost]
-        [Route("CreateActor")]
+
+        // POST: api/Actors/CreateActor
+        [HttpPost("CreateActor")]
         public async Task<IActionResult> CreateActorAsync([FromBody] AddActorDTO addActorDTO)
         {
-            var actor = new Actor
+            try
             {
-                FirstName = addActorDTO.FirstName,
-                LastName = addActorDTO.LastName,
-            };
-            await _actorRepository.AddAsync(actor);
-            return Ok(actor);
-        }
-        [HttpPut]
-        [Route("UpdateActor")]
-        public async Task<IActionResult> UpdateActorAsync([FromBody] UpdActorDTO updActorDTO,int id)
-        {
-            var actor= await _actorRepository.GetAsync(id);
-
-            if (id != actor.Id)
-            {
-                return BadRequest();
+                var actor = new Actor
+                {
+                    FirstName = addActorDTO.FirstName,
+                    LastName = addActorDTO.LastName
+                };
+                await _actorRepository.AddAsync(actor);
+                return Ok(actor);
             }
-            if(actor !=null)
+            catch (Exception ex)
             {
-                actor.FirstName = actor.FirstName;
-                actor.LastName = actor.FirstName;
+                _logger.LogError(ex, "An error occurred while creating actor.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
+        }
+
+        // PUT: api/Actors/UpdateActor/5
+        [HttpPut("UpdateActor/{id}")]
+        public async Task<IActionResult> UpdateActorAsync(int id, [FromBody] UpdActorDTO updActorDTO)
+        {
+            try
+            {
+                var actor = await _actorRepository.GetAsync(id);
+                if (actor == null)
+                {
+                    return NotFound();
+                }
+
+                actor.FirstName = updActorDTO.FirstName;
+                actor.LastName = updActorDTO.LastName;
 
                 await _actorRepository.UpdateAsync(actor);
                 return Ok(actor);
             }
-
-            return NotFound();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while updating actor with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
-        // DELETE: api/Actors/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Actors/DeleteActor/5
+        [HttpDelete("DeleteActor/{id}")]
         public async Task<IActionResult> DeleteActor(int id)
         {
-            var actor = await _actorRepository.GetAsync(id);
-            if (actor == null)
+            try
             {
-                return NotFound();
+                var actor = await _actorRepository.GetAsync(id);
+                if (actor == null)
+                {
+                    return NotFound();
+                }
+
+                await _actorRepository.DeleteAsync(actor);
+                return Ok();
             }
-            await _actorRepository.DeleteAsync(actor);
-            return Ok();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while deleting actor with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }
+

@@ -1,86 +1,125 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TechTaskInnowise.Models;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using TechTaskInnowise.Data;
-using Microsoft.EntityFrameworkCore;
 using TechTaskInnowise.IRepositories;
+using TechTaskInnowise.Models;
 using TechTaskInnowise.Models.DTOs;
 
 namespace TechTaskInnowise.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FilmsController : Controller
+    public class FilmsController : ControllerBase
     {
         private readonly IFilmsRepositories _filmRepository;
+        private readonly ILogger<FilmsController> _logger;
 
-        public FilmsController(IFilmsRepositories filmRepository)
+        public FilmsController(IFilmsRepositories filmRepository, ILogger<FilmsController> logger)
         {
             _filmRepository = filmRepository;
+            _logger = logger;
         }
-        // GET: ActorsController
-        // GET: api/Actors
+
         [HttpGet]
         public async Task<IActionResult> GetFilmsList()
         {
-            var films = await _filmRepository.GetListAsync();
-            return Ok(films.ToList());
+            try
+            {
+                var films = await _filmRepository.GetListAsync();
+                return Ok(films.ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting films list.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFilm(int id)
         {
-            var film = await _filmRepository.GetAsync(id);
-            if (film == null)
+            try
             {
-                return NotFound();
+                var film = await _filmRepository.GetAsync(id);
+                if (film == null)
+                {
+                    return NotFound();
+                }
+                return Ok(film);
             }
-            return Ok(film);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while getting film with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
-        [HttpPost]
-        [Route("CreateActor")]
+
+        [HttpPost("CreateFilm")]
         public async Task<IActionResult> CreateFilmAsync([FromBody] AddFilmDTO addFilmDTO)
         {
-            var film = new Film
+            try
             {
-                Title = addFilmDTO.Title,
-                Year = addFilmDTO.Year,
-            };
-            await _filmRepository.AddAsync(film);
-            return Ok(film);
-        }
-        [HttpPut]
-        [Route("UpdateActor")]
-        public async Task<IActionResult> UpdateFilmAsync([FromBody] UpdFilmDTO updFilmDTO, int id)
-        {
-            var film = await _filmRepository.GetAsync(id);
-
-            if (id != film.Id)
-            {
-                return BadRequest();
+                var film = new Film
+                {
+                    Title = addFilmDTO.Title,
+                    Year = addFilmDTO.Year,
+                };
+                await _filmRepository.AddAsync(film);
+                return Ok(film);
             }
-            if (film != null)
+            catch (Exception ex)
             {
-                film.Title = film.Title;
-                film.Year = film.Year;
+                _logger.LogError(ex, "An error occurred while creating film.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
+        }
+
+        [HttpPut("UpdateFilm/{id}")]
+        public async Task<IActionResult> UpdateFilmAsync(int id, [FromBody] UpdFilmDTO updFilmDTO)
+        {
+            try
+            {
+                var film = await _filmRepository.GetAsync(id);
+                if (film == null)
+                {
+                    return NotFound();
+                }
+
+                film.Title = updFilmDTO.Title;
+                film.Year = updFilmDTO.Year;
 
                 await _filmRepository.UpdateAsync(film);
                 return Ok(film);
             }
-
-            return NotFound();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while updating film with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
-        // DELETE: api/Actors/5
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteFilm/{id}")]
         public async Task<IActionResult> DeleteFilm(int id)
         {
-            var film = await _filmRepository.GetAsync(id);
-            if (film == null)
+            try
             {
-                return NotFound();
+                var film = await _filmRepository.GetAsync(id);
+                if (film == null)
+                {
+                    return NotFound();
+                }
+
+                await _filmRepository.DeleteAsync(film);
+                return Ok();
             }
-            await _filmRepository.DeleteAsync(film);
-            return Ok();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while deleting film with ID {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }
