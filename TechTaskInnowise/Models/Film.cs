@@ -17,6 +17,7 @@ namespace TechTaskInnowise.Models
         public Film()
         {
             Actors = new List<Actor>();
+            Reviews = new List<Review>();
         }
     }
 }

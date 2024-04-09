@@ -6,8 +6,6 @@ namespace TechTaskInnowise.Models.DTOs
     {
         public string Title { get; set; }
         public int Year { get; set; }
-
-        public ICollection<Actor> Actors { get; set; }
-        public ICollection<Review> Reviews { get; set; }
+        public List<int> ActorIds { get; set; }
     }
 }

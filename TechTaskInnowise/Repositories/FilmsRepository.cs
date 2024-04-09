@@ -12,9 +12,9 @@ namespace TechTaskInnowise.Repositories
         {
             _context = context;
         }
-        public async Task<List<Film>> GetListAsync(bool includeFilms = false)
+        public async Task<List<Film>> GetListAsync(bool includeActors = false)
         {
-            if (includeFilms)
+            if (includeActors)
             {
                 return await _context.Films
                     .Select(a => new Film
@@ -27,6 +27,12 @@ namespace TechTaskInnowise.Repositories
                             Id = f.Id,
                             FirstName = f.FirstName,
                             LastName = f.LastName
+                        }).ToList(),
+                        Reviews = a.Reviews.Select(r => new Review
+                        {
+                            Id = r.Id,
+                            Description = r.Description,
+                            Stars = r.Stars
                         }).ToList()
                     })
                     .ToListAsync();
@@ -36,9 +42,9 @@ namespace TechTaskInnowise.Repositories
                 return await _context.Films.ToListAsync();
             }
         }
-        public async Task<Film> GetAsync(int id, bool includeFilms = false)
+        public async Task<Film> GetAsync(int id, bool includeActors = false)
         {
-            if (includeFilms)
+            if (includeActors)
             {
                 return await _context.Films
                     .Where(a => a.Id == id)
@@ -52,6 +58,12 @@ namespace TechTaskInnowise.Repositories
                             Id = f.Id,
                             FirstName = f.FirstName,
                             LastName = f.LastName
+                        }).ToList(),
+                        Reviews = a.Reviews.Select(r => new Review 
+                        { 
+                            Id = r.Id,
+                            Description = r.Description,
+                            Stars=r.Stars
                         }).ToList()
                     })
                     .FirstOrDefaultAsync();
