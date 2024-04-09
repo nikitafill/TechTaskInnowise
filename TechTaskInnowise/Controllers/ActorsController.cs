@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TechTaskInnowise.IRepositories;
 using TechTaskInnowise.Models;
 using TechTaskInnowise.Models.DTOs;
+using TechTaskInnowise.Repositories;
 
 namespace TechTaskInnowise.Controllers
 {
@@ -18,11 +19,13 @@ namespace TechTaskInnowise.Controllers
     public class ActorsController : ControllerBase
     {
         private readonly IActorRepositories _actorRepository;
-        private readonly ILogger<ActorsController> _logger;
+        private readonly IFilmsRepositories _filmRepository;
+        private readonly ILogger<FilmsController> _logger;
 
-        public ActorsController(IActorRepositories actorRepository, ILogger<ActorsController> logger)
+        public ActorsController(IActorRepositories actorRepository, IFilmsRepositories filmRepository, ILogger<FilmsController> logger)
         {
             _actorRepository = actorRepository;
+            _filmRepository = filmRepository;
             _logger = logger;
         }
 
@@ -68,11 +71,21 @@ namespace TechTaskInnowise.Controllers
         {
             try
             {
+                var films = new List<Film>();
+
+                foreach (var filmId in addActorDTO.FilmIds)
+                {
+                    var film = await _filmRepository.GetAsync(filmId, includeActors: false);
+                    if (film != null)
+                        films.Add(film);
+                }
                 var actor = new Actor
                 {
                     FirstName = addActorDTO.FirstName,
-                    LastName = addActorDTO.LastName
+                    LastName = addActorDTO.LastName,
+                    Films = films
                 };
+
                 await _actorRepository.AddAsync(actor);
                 return Ok(actor);
             }
@@ -98,8 +111,20 @@ namespace TechTaskInnowise.Controllers
                 actor.FirstName = updActorDTO.FirstName;
                 actor.LastName = updActorDTO.LastName;
 
+                var films = new List<Film>();
+
+                foreach (var filmId in updActorDTO.FilmIds)
+                {
+                    var film = await _filmRepository.GetAsync(filmId);
+                    if (film != null)
+                        films.Add(film);
+                }
+
+                actor.Films = films;
+
                 await _actorRepository.UpdateAsync(actor);
                 return Ok(actor);
+
             }
             catch (Exception ex)
             {

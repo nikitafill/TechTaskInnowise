@@ -4,6 +4,6 @@
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public ICollection<Film> Films { get; set; }
+        public List<int> FilmIds { get; set; }
     }
 }
