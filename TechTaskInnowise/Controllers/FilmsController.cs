@@ -28,7 +28,7 @@ namespace TechTaskInnowise.Controllers
         {
             try
             {
-                var films = await _filmRepository.GetListAsync();
+                var films = await _filmRepository.GetListAsync(includeFilms: true);
                 return Ok(films);
             }
             catch (Exception ex)
@@ -43,7 +43,7 @@ namespace TechTaskInnowise.Controllers
         {
             try
             {
-                var film = await _filmRepository.GetAsync(id);
+                var film = await _filmRepository.GetAsync(id, includeFilms: true);
                 if (film == null)
                 {
                     return NotFound();
