@@ -20,9 +20,9 @@ namespace TechTaskInnowise.Controllers
     {
         private readonly IActorRepositories _actorRepository;
         private readonly IFilmsRepositories _filmRepository;
-        private readonly ILogger<FilmsController> _logger;
+        private readonly ILogger<ActorsController> _logger;
 
-        public ActorsController(IActorRepositories actorRepository, IFilmsRepositories filmRepository, ILogger<FilmsController> logger)
+        public ActorsController(IActorRepositories actorRepository, IFilmsRepositories filmRepository, ILogger<ActorsController> logger)
         {
             _actorRepository = actorRepository;
             _filmRepository = filmRepository;
