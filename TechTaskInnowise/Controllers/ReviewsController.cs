@@ -29,7 +29,7 @@ namespace TechTaskInnowise.Controllers
             try
             {
                 var reviews = await _reviewRepository.GetListAsync();
-                return Ok(reviews);
+                return Ok("Отывы добавлены" + reviews);
             }
             catch (Exception ex)
             {
